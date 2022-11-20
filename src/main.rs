@@ -1,7 +1,6 @@
-use sane_scan::{DeviceOptionValue, Sane};
+use sane_scan::{DeviceOption, DeviceOptionValue, Sane};
 use std::fs::File;
 use std::io::prelude::*;
-use std::os::linux::raw::stat;
 
 fn main() {
     let sane = Sane::init_1_0().expect("Failed to initialize SANE");
@@ -20,10 +19,7 @@ fn main() {
     println!("{:?}", params);
 
     // Set resolution.
-    if let Some(option) = options
-        .iter()
-        .find(|opt| opt.name.eq(&"resolution".c_string()))
-    {
+    if let Some(option) = options.find_option("resolution") {
         let value = DeviceOptionValue::Int(1);
         handle
             .set_option(&option, value)
@@ -31,7 +27,7 @@ fn main() {
     }
 
     // Set depth to color scan.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"depth".c_string())) {
+    if let Some(option) = options.find_option("depth") {
         let value = DeviceOptionValue::Int(16);
         handle
             .set_option(&option, value)
@@ -39,7 +35,7 @@ fn main() {
     }
 
     // Set top-left X.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"tl-x".c_string())) {
+    if let Some(option) = options.find_option("tl-x") {
         let value = DeviceOptionValue::Fixed(0);
         handle
             .set_option(&option, value)
@@ -47,7 +43,7 @@ fn main() {
     }
 
     // Set top-left Y.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"tl-y".c_string())) {
+    if let Some(option) = options.find_option("tl-y") {
         let value = DeviceOptionValue::Fixed(0);
         handle
             .set_option(&option, value)
@@ -55,7 +51,7 @@ fn main() {
     }
 
     // Set bottom-right X.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"br-x".c_string())) {
+    if let Some(option) = options.find_option("br-x") {
         let value = DeviceOptionValue::Fixed(14090240);
         handle
             .set_option(&option, value)
@@ -63,7 +59,7 @@ fn main() {
     }
 
     // Set bottom-right Y.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"br-y".c_string())) {
+    if let Some(option) = options.find_option("br-y") {
         let value = DeviceOptionValue::Fixed(19464192);
         handle
             .set_option(&option, value)
@@ -71,10 +67,7 @@ fn main() {
     }
 
     // Disable red lamp.
-    if let Some(option) = options
-        .iter()
-        .find(|opt| opt.name.eq(&"redlamp-off".c_string()))
-    {
+    if let Some(option) = options.find_option("redlamp-off") {
         let value = DeviceOptionValue::Int(0);
         handle
             .set_option(&option, value)
@@ -82,10 +75,7 @@ fn main() {
     }
 
     // Disable green lamp.
-    if let Some(option) = options
-        .iter()
-        .find(|opt| opt.name.eq(&"greenlamp-off".c_string()))
-    {
+    if let Some(option) = options.find_option("greenlamp-off") {
         let value = DeviceOptionValue::Int(0);
         handle
             .set_option(&option, value)
@@ -93,10 +83,7 @@ fn main() {
     }
 
     // Disable blue lamp.
-    if let Some(option) = options
-        .iter()
-        .find(|opt| opt.name.eq(&"bluelamp-off".c_string()))
-    {
+    if let Some(option) = options.find_option("bluelamp-off") {
         let value = DeviceOptionValue::Int(0);
         handle
             .set_option(&option, value)
@@ -104,10 +91,7 @@ fn main() {
     }
 
     // Enable preview.
-    if let Some(option) = options
-        .iter()
-        .find(|opt| opt.name.eq(&"preview".c_string()))
-    {
+    if let Some(option) = options.find_option("preview") {
         let value = DeviceOptionValue::Int(0);
         handle
             .set_option(&option, value)
@@ -149,17 +133,15 @@ fn main() {
     println!("Total bytes read: {}", bytes_read);
 }
 
-trait AsCString {
-    fn c_string(self) -> std::ffi::CString;
-}
-
-impl<S: AsRef<str>> AsCString for S {
-    fn c_string(self) -> std::ffi::CString {
-        std::ffi::CString::new(self.as_ref()).expect("CString::new failed")
-    }
-}
-
 trait FindOption<'a> {
+    /// Finds a [`sane_scan::DeviceOption`] by name.
+    ///
+    /// ## Panics
+    /// Panics if the option name cannot be represented as a [`std::ffi::CString`].
+    ///
+    /// ## Returns
+    /// A reference to the found [`sane_scan::DeviceOption`] or
+    /// [`Option::None`] if the option was not found.
     fn find_option<S: AsRef<str>>(&'a self, name: S) -> Option<&'a DeviceOption>;
 }
 
@@ -167,5 +149,22 @@ impl<'a> FindOption<'a> for Vec<DeviceOption> {
     fn find_option<S: AsRef<str>>(&'a self, name: S) -> Option<&'a DeviceOption> {
         let name = name.as_ref().c_string();
         self.iter().find(|opt| opt.name.eq(&name))
+    }
+}
+
+trait AsCString {
+    /// Convert to a [`std::ffi::CString`] instance.
+    ///
+    /// ## Panics
+    /// Panics if the input cannot be represented as a [`std::ffi::CString`].
+    ///
+    /// ## Returns
+    /// The [`std::ffi::CString`].
+    fn c_string(self) -> std::ffi::CString;
+}
+
+impl<S: AsRef<str>> AsCString for S {
+    fn c_string(self) -> std::ffi::CString {
+        std::ffi::CString::new(self.as_ref()).expect("CString::new failed")
     }
 }
