@@ -22,7 +22,7 @@ fn main() {
     if let Some(option) = options.find_option("resolution") {
         let value = DeviceOptionValue::Int(1);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set resolution");
     }
 
@@ -30,7 +30,7 @@ fn main() {
     if let Some(option) = options.find_option("depth") {
         let value = DeviceOptionValue::Int(16);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set depth");
     }
 
@@ -38,7 +38,7 @@ fn main() {
     if let Some(option) = options.find_option("tl-x") {
         let value = DeviceOptionValue::Fixed(0);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set top-left X coordinate");
     }
 
@@ -46,7 +46,7 @@ fn main() {
     if let Some(option) = options.find_option("tl-y") {
         let value = DeviceOptionValue::Fixed(0);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set top-left Y coordinate");
     }
 
@@ -54,7 +54,7 @@ fn main() {
     if let Some(option) = options.find_option("br-x") {
         let value = DeviceOptionValue::Fixed(14090240);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set bottom-right X coordinate");
     }
 
@@ -62,7 +62,7 @@ fn main() {
     if let Some(option) = options.find_option("br-y") {
         let value = DeviceOptionValue::Fixed(19464192);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set bottom-right Y coordinate");
     }
 
@@ -70,7 +70,7 @@ fn main() {
     if let Some(option) = options.find_option("redlamp-off") {
         let value = DeviceOptionValue::Int(0);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set red lamp off");
     }
 
@@ -78,7 +78,7 @@ fn main() {
     if let Some(option) = options.find_option("greenlamp-off") {
         let value = DeviceOptionValue::Int(0);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set green lamp off");
     }
 
@@ -86,7 +86,7 @@ fn main() {
     if let Some(option) = options.find_option("bluelamp-off") {
         let value = DeviceOptionValue::Int(0);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set blue lamp off");
     }
 
@@ -94,7 +94,7 @@ fn main() {
     if let Some(option) = options.find_option("preview") {
         let value = DeviceOptionValue::Int(0);
         handle
-            .set_option(&option, value)
+            .set_option(option, value)
             .expect("Failed to set preview mode");
     }
 
