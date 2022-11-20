@@ -1,7 +1,7 @@
+use sane_scan::{DeviceOptionValue, Sane};
 use std::fs::File;
 use std::io::prelude::*;
 use std::os::linux::raw::stat;
-use sane_scan::{DeviceOptionValue, Sane};
 
 fn main() {
     let sane = Sane::init_1_0().expect("Failed to initialize SANE");
@@ -20,63 +20,98 @@ fn main() {
     println!("{:?}", params);
 
     // Set resolution.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("resolution").expect("CString::new failed"))) {
+    if let Some(option) = options
+        .iter()
+        .find(|opt| opt.name.eq(&"resolution".c_string()))
+    {
         let value = DeviceOptionValue::Int(1);
-        handle.set_option(&option, value).expect("Failed to set resolution");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set resolution");
     }
 
     // Set depth to color scan.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("depth").expect("CString::new failed"))) {
+    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"depth".c_string())) {
         let value = DeviceOptionValue::Int(16);
-        handle.set_option(&option, value).expect("Failed to set depth");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set depth");
     }
 
     // Set top-left X.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("tl-x").expect("CString::new failed"))) {
+    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"tl-x".c_string())) {
         let value = DeviceOptionValue::Fixed(0);
-        handle.set_option(&option, value).expect("Failed to set top-left X coordinate");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set top-left X coordinate");
     }
 
     // Set top-left Y.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("tl-y").expect("CString::new failed"))) {
+    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"tl-y".c_string())) {
         let value = DeviceOptionValue::Fixed(0);
-        handle.set_option(&option, value).expect("Failed to set top-left Y coordinate");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set top-left Y coordinate");
     }
 
     // Set bottom-right X.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("br-x").expect("CString::new failed"))) {
+    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"br-x".c_string())) {
         let value = DeviceOptionValue::Fixed(14090240);
-        handle.set_option(&option, value).expect("Failed to set bottom-right X coordinate");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set bottom-right X coordinate");
     }
 
     // Set bottom-right Y.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("br-y").expect("CString::new failed"))) {
+    if let Some(option) = options.iter().find(|opt| opt.name.eq(&"br-y".c_string())) {
         let value = DeviceOptionValue::Fixed(19464192);
-        handle.set_option(&option, value).expect("Failed to set bottom-right Y coordinate");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set bottom-right Y coordinate");
     }
 
     // Disable red lamp.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("redlamp-off").expect("CString::new failed"))) {
+    if let Some(option) = options
+        .iter()
+        .find(|opt| opt.name.eq(&"redlamp-off".c_string()))
+    {
         let value = DeviceOptionValue::Int(0);
-        handle.set_option(&option, value).expect("Failed to set red lamp off");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set red lamp off");
     }
 
     // Disable green lamp.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("greenlamp-off").expect("CString::new failed"))) {
+    if let Some(option) = options
+        .iter()
+        .find(|opt| opt.name.eq(&"greenlamp-off".c_string()))
+    {
         let value = DeviceOptionValue::Int(0);
-        handle.set_option(&option, value).expect("Failed to set green lamp off");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set green lamp off");
     }
 
     // Disable blue lamp.
-    if let Some(option) = options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("bluelamp-off").expect("CString::new failed"))) {
+    if let Some(option) = options
+        .iter()
+        .find(|opt| opt.name.eq(&"bluelamp-off".c_string()))
+    {
         let value = DeviceOptionValue::Int(0);
-        handle.set_option(&option, value).expect("Failed to set blue lamp off");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set blue lamp off");
     }
 
     // Enable preview.
-    if let Some(option) =  options.iter().find(|opt| opt.name.eq(&std::ffi::CString::new("preview").expect("CString::new failed"))) {
+    if let Some(option) = options
+        .iter()
+        .find(|opt| opt.name.eq(&"preview".c_string()))
+    {
         let value = DeviceOptionValue::Int(0);
-        handle.set_option(&option, value).expect("Failed to set preview mode");
+        handle
+            .set_option(&option, value)
+            .expect("Failed to set preview mode");
     }
 
     let params = handle.get_parameters().expect("Failed to get parameters");
@@ -86,7 +121,12 @@ fn main() {
     println!("{:?}", params);
 
     let mut file = File::create("test.ppm").expect("Failed to create output file");
-    writeln!(file, "P6\n{} {}\n65535\n", params.pixels_per_line, params.lines).expect("Failed to write to output file");
+    writeln!(
+        file,
+        "P6\n{} {}\n65535\n",
+        params.pixels_per_line, params.lines
+    )
+    .expect("Failed to write to output file");
 
     // TODO: Read the number of bytes per line (params.pixels_per_line, params.bytes_per_line, params.lines, params.depth)
     let mut buffer = vec![0u8; 1024];
@@ -100,10 +140,32 @@ fn main() {
             Ok(None) => break,
             Ok(Some(count)) => {
                 bytes_read += count;
-                file.write_all(&buffer[0 .. count]).expect("Failed to write to the output file");
+                file.write_all(&buffer[0..count])
+                    .expect("Failed to write to the output file");
             }
         }
     }
 
     println!("Total bytes read: {}", bytes_read);
+}
+
+trait AsCString {
+    fn c_string(self) -> std::ffi::CString;
+}
+
+impl<S: AsRef<str>> AsCString for S {
+    fn c_string(self) -> std::ffi::CString {
+        std::ffi::CString::new(self.as_ref()).expect("CString::new failed")
+    }
+}
+
+trait FindOption<'a> {
+    fn find_option<S: AsRef<str>>(&'a self, name: S) -> Option<&'a DeviceOption>;
+}
+
+impl<'a> FindOption<'a> for Vec<DeviceOption> {
+    fn find_option<S: AsRef<str>>(&'a self, name: S) -> Option<&'a DeviceOption> {
+        let name = name.as_ref().c_string();
+        self.iter().find(|opt| opt.name.eq(&name))
+    }
 }
